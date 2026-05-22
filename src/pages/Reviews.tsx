@@ -128,7 +128,7 @@ const Reviews = () => {
             Let's discuss your next project. Get in touch today for a free consultation.
           </p>
           <a
-            href="https://wa.me/27000000000"
+            href="https://wa.me/27614770708"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-[#C05A1E] hover:bg-[#A04A18] text-white px-8 py-4 rounded-lg font-semibold inline-block transition-colors"

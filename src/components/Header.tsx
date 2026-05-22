@@ -50,7 +50,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen }: HeaderProps) => {
               </Link>
             ))}
             <a
-              href="https://wa.me/27000000000"
+              href="https://wa.me/27614770708"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#C05A1E] hover:bg-[#A04A18] px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
@@ -86,7 +86,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen }: HeaderProps) => {
               </Link>
             ))}
             <a
-              href="https://wa.me/27000000000"
+              href="https://wa.me/27614770708"
               target="_blank"
               rel="noopener noreferrer"
               className="block mt-4 bg-[#C05A1E] hover:bg-[#A04A18] px-4 py-3 rounded-lg text-center"

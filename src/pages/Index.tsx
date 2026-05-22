@@ -78,7 +78,7 @@ const Index = () => {
               <ArrowRight size={20} />
             </Link>
             <a
-              href="https://wa.me/27000000000"
+              href="https://wa.me/27614770708"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white hover:bg-gray-100 text-[#2A3A4A] px-8 py-4 rounded-lg font-semibold transition-colors"

@@ -15,7 +15,7 @@ const Contact = () => {
     // Create WhatsApp message
     const message = `Hi GE Construction! My name is ${formData.name}.\n\nI'm interested in: ${formData.service}\n\n${formData.message}\n\nYou can reach me at:\nEmail: ${formData.email}\nPhone: ${formData.phone}`;
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/27000000000?text=${encodedMessage}`, "_blank");
+    window.open(`https://wa.me/27614770708?text=${encodedMessage}`, "_blank");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -54,12 +54,12 @@ const Contact = () => {
                     <h3 className="font-semibold text-[#2A3A4A]">WhatsApp (Preferred)</h3>
                     <p className="text-gray-600">Quick responses, easy communication</p>
                     <a
-                      href="https://wa.me/27000000000"
+                      href="https://wa.me/27614770708"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[#C05A1E] font-medium hover:underline"
                     >
-                      +27 00 000 0000
+                      +27 61 477 0708
                     </a>
                   </div>
                 </div>
@@ -71,8 +71,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-[#2A3A4A]">Phone</h3>
                     <p className="text-gray-600">Call us during business hours</p>
-                    <a href="tel:+27000000000" className="text-[#C05A1E] font-medium hover:underline">
-                      +27 00 000 0000
+                    <a href="tel:+27614770708" className="text-[#C05A1E] font-medium hover:underline">
+                      +27 61 477 0708
                     </a>
                   </div>
                 </div>
@@ -84,8 +84,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-[#2A3A4A]">Email</h3>
                     <p className="text-gray-600">Send us an email anytime</p>
-                    <a href="mailto:info@geconstruction.co.za" className="text-[#C05A1E] font-medium hover:underline">
-                      info@geconstruction.co.za
+                    <a href="mailto:gert@geconstruction.co.za" className="text-[#C05A1E] font-medium hover:underline">
+                      gert@geconstruction.co.za
                     </a>
                   </div>
                 </div>
@@ -118,7 +118,7 @@ const Contact = () => {
                 <h3 className="text-xl font-bold mb-2">Prefer WhatsApp?</h3>
                 <p className="mb-4">Get a quick response by messaging us directly on WhatsApp.</p>
                 <a
-                  href="https://wa.me/27000000000"
+                  href="https://wa.me/27614770708"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-white text-[#25D366] px-6 py-3 rounded-lg font-semibold inline-block hover:bg-gray-100 transition-colors"

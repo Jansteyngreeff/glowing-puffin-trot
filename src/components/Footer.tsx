@@ -74,14 +74,14 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center space-x-3">
                 <Phone size={16} className="text-[#C05A1E]" />
-                <a href="https://wa.me/27000000000" className="text-sm text-gray-300 hover:text-[#C05A1E]">
-                  +27 00 000 0000
+                <a href="https://wa.me/27614770708" className="text-sm text-gray-300 hover:text-[#C05A1E]">
+                  +27 61 477 0708
                 </a>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail size={16} className="text-[#C05A1E]" />
-                <a href="mailto:info@geconstruction.co.za" className="text-sm text-gray-300 hover:text-[#C05A1E]">
-                  info@geconstruction.co.za
+                <a href="mailto:gert@geconstruction.co.za" className="text-sm text-gray-300 hover:text-[#C05A1E]">
+                  gert@geconstruction.co.za
                 </a>
               </li>
               <li className="flex items-start space-x-3">
