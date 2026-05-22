@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import { Save, Search, Globe } from 'lucide-react';
+import { Save, Search, Globe, RefreshCw, FileText } from 'lucide-react';
+import { regenerateSitemap } from '@/utils/sitemap';
 
 const pages = [
   { slug: 'home', label: 'Home Page' },
@@ -15,6 +16,8 @@ const SeoSettings = () => {
   const queryClient = useQueryClient();
   const [activePage, setActivePage] = useState('home');
   const [saved, setSaved] = useState(false);
+  const [sitemapRegenerating, setSitemapRegenerating] = useState(false);
+  const [sitemapMessage, setSitemapMessage] = useState('');
   const [seoData, setSeoData] = useState<Record<string, any>>({});
 
   const { data: settings, isLoading } = useQuery({
