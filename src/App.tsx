@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { useState } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
+import { AnalyticsProvider } from "./contexts/AnalyticsContext";
+import AnalyticsScripts from "./components/AnalyticsScripts";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Index from "./pages/Index";
@@ -24,6 +26,7 @@ import SeoSettings from "./pages/admin/SeoSettings";
 import BlogList from "./pages/admin/BlogList";
 import BlogEditor from "./pages/admin/BlogEditor";
 import ReviewManager from "./pages/admin/ReviewManager";
+import Analytics from "./pages/admin/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +60,7 @@ const App = () => {
                             <Route path="blog/new" element={<BlogEditor />} />
                             <Route path="blog/edit/:id" element={<BlogEditor />} />
                             <Route path="reviews" element={<ReviewManager />} />
+                            <Route path="analytics" element={<Analytics />} />
                           </Route>
                         </Routes>
                       </ProtectedRoute>
@@ -67,7 +71,8 @@ const App = () => {
                   <Route
                     path="*"
                     element={
-                      <>
+                      <AnalyticsProvider>
+                        <AnalyticsScripts />
                         <Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
                         <main className="flex-grow">
                           <Routes>
@@ -81,7 +86,7 @@ const App = () => {
                           </Routes>
                         </main>
                         <Footer />
-                      </>
+                      </AnalyticsProvider>
                     }
                   />
                 </Routes>

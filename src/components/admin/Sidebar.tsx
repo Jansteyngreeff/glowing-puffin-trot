@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Building2, Search, FileText, Star, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, Building2, Search, BarChart3, FileText, Star, LogOut, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface SidebarProps {
@@ -14,6 +14,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
     { to: '/admin/business', icon: Building2, label: 'Business Details' },
     { to: '/admin/seo', icon: Search, label: 'SEO Settings' },
+    { to: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
     { to: '/admin/blog', icon: FileText, label: 'Blog Posts' },
     { to: '/admin/reviews', icon: Star, label: 'Reviews' },
   ];

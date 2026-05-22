@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Helmet } from "react-helmet-async";
+import { trackFbEvent, trackGaEvent } from "@/components/AnalyticsScripts";
 
 const Contact = () => {
   const { data: business } = useQuery({
@@ -31,6 +32,8 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    trackFbEvent('ContactFormSubmitted');
+    trackGaEvent('contact_form_submitted');
     const message = `Hi GE Construction! My name is ${formData.name}.\n\nI'm interested in: ${formData.service}\n\n${formData.message}\n\nYou can reach me at:\nEmail: ${formData.email}\nPhone: ${formData.phone}`;
     const encodedMessage = encodeURIComponent(message);
     const whatsapp = (business?.whatsapp || '+27614770708').replace(/[^0-9]/g, '');
@@ -90,6 +93,7 @@ const Contact = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[#C05A1E] font-medium hover:underline"
+                      onClick={() => { trackFbEvent('WhatsAppClicked'); trackGaEvent('whatsapp_clicked'); }}
                     >
                       {business?.whatsapp || '+27 61 477 0708'}
                     </a>
@@ -154,6 +158,7 @@ const Contact = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-white text-[#25D366] px-6 py-3 rounded-lg font-semibold inline-block hover:bg-gray-100 transition-colors"
+                  onClick={() => { trackFbEvent('WhatsAppClicked'); trackGaEvent('whatsapp_clicked'); }}
                 >
                   Start WhatsApp Chat
                 </a>

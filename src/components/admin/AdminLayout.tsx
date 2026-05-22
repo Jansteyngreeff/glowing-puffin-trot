@@ -14,6 +14,7 @@ const AdminLayout = () => {
     if (path === '/admin') return 'Dashboard';
     if (path.startsWith('/admin/business')) return 'Business Details';
     if (path.startsWith('/admin/seo')) return 'SEO Settings';
+    if (path.startsWith('/admin/analytics')) return 'Analytics';
     if (path.startsWith('/admin/blog')) {
       if (path === '/admin/blog/new') return 'New Blog Post';
       if (path.startsWith('/admin/blog/edit')) return 'Edit Blog Post';

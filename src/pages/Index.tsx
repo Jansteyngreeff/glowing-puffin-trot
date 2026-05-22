@@ -7,6 +7,7 @@ import TrustSignals from "../components/TrustSignals";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Helmet } from "react-helmet-async";
+import { trackFbEvent, trackGaEvent } from "@/components/AnalyticsScripts";
 
 const Index = () => {
   const { data: seo } = useQuery({
@@ -93,6 +94,7 @@ const Index = () => {
             <Link
               to="/contact"
               className="bg-[#C05A1E] hover:bg-[#A04A18] text-white px-8 py-4 rounded-lg font-semibold inline-flex items-center justify-center space-x-2 transition-colors"
+              onClick={() => { trackFbEvent('QuoteRequested'); trackGaEvent('quote_requested'); }}
             >
               <span>Get A Free Quote</span>
               <ArrowRight size={20} />
@@ -102,6 +104,7 @@ const Index = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white hover:bg-gray-100 text-[#2A3A4A] px-8 py-4 rounded-lg font-semibold transition-colors"
+              onClick={() => { trackFbEvent('WhatsAppClicked'); trackGaEvent('whatsapp_clicked'); }}
             >
               WhatsApp Us Now
             </a>
