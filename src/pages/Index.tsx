@@ -4,14 +4,34 @@ import HeroSection from "../components/HeroSection";
 import ServicesPreview from "../components/ServicesPreview";
 import TestimonialsPreview from "../components/TestimonialsPreview";
 import TrustSignals from "../components/TrustSignals";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { Helmet } from "react-helmet-async";
 
 const Index = () => {
+  const { data: seo } = useQuery({
+    queryKey: ['seo-settings', 'home'],
+    queryFn: async () => {
+      const { data } = await supabase.from('seo_settings').select('*').eq('page_slug', 'home').single();
+      return data;
+    },
+  });
+
   return (
     <div className="bg-[#F4F4F2]">
+      <Helmet>
+        <title>{seo?.meta_title || 'GE Construction | Trusted Building & Renovation Solutions'}</title>
+        <meta name="description" content={seo?.meta_description || ''} />
+        {seo?.og_title && <meta property="og:title" content={seo.og_title} />}
+        {seo?.og_description && <meta property="og:description" content={seo.og_description} />}
+        {seo?.og_image_url && <meta property="og:image" content={seo.og_image_url} />}
+        {seo?.favicon_url && <link rel="icon" href={seo.favicon_url} />}
+      </Helmet>
+
       <HeroSection />
       <TrustSignals />
       <ServicesPreview />
-      
+
       {/* Why Choose Us Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

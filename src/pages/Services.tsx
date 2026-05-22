@@ -1,7 +1,18 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Home, PaintBucket, CloudRain, Fence, Building2, Wrench } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { Helmet } from "react-helmet-async";
 
 const Services = () => {
+  const { data: seo } = useQuery({
+    queryKey: ['seo-settings', 'services'],
+    queryFn: async () => {
+      const { data } = await supabase.from('seo_settings').select('*').eq('page_slug', 'services').single();
+      return data;
+    },
+  });
+
   const services = [
     {
       icon: Home,
@@ -79,6 +90,13 @@ const Services = () => {
 
   return (
     <div className="bg-[#F4F4F2]">
+      <Helmet>
+        <title>{seo?.meta_title || 'Our Services | GE Construction'}</title>
+        <meta name="description" content={seo?.meta_description || ''} />
+        {seo?.og_title && <meta property="og:title" content={seo.og_title} />}
+        {seo?.og_description && <meta property="og:description" content={seo.og_description} />}
+      </Helmet>
+
       {/* Hero Section */}
       <section className="bg-[#2A3A4A] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -94,19 +112,14 @@ const Services = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-12">
             {services.map((service, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl shadow-sm overflow-hidden"
-              >
+              <div key={index} className="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div className="p-8">
                   <div className="flex items-start space-x-4">
                     <div className="w-14 h-14 bg-[#2A3A4A] rounded-lg flex items-center justify-center flex-shrink-0">
                       <service.icon className="text-[#C05A1E]" size={28} />
                     </div>
                     <div className="flex-1">
-                      <h2 className="text-2xl font-bold text-[#2A3A4A] mb-3">
-                        {service.title}
-                      </h2>
+                      <h2 className="text-2xl font-bold text-[#2A3A4A] mb-3">{service.title}</h2>
                       <p className="text-gray-600 mb-6">{service.description}</p>
                       <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {service.features.map((feature, idx) => (
@@ -128,9 +141,7 @@ const Services = () => {
       {/* CTA Section */}
       <section className="py-16 bg-[#2A3A4A]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Need A Service Not Listed?
-          </h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Need A Service Not Listed?</h2>
           <p className="text-xl text-gray-300 mb-8">
             We're always happy to discuss your project. Get in touch and let's see how we can help.
           </p>
