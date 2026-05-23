@@ -58,10 +58,16 @@
 ### Build Commands
 ```bash
 npm run dev          # Start Vite dev server
-npm run build        # Generate sitemap + Vite production build
-npm run sitemap      # Run sitemap generation script only
+npm run build        # Generate sitemap + Vite production build (sitemap runs automatically)
+npm run sitemap      # Run sitemap generation script only (scripts/generate-sitemap.ts)
 npm run preview      # Preview production build locally
 ```
+
+### Sitemap Generation
+- **Build-time**: `scripts/generate-sitemap.ts` runs via `npm run sitemap`, fetches published blog posts from Supabase, writes `public/sitemap.xml`
+- **Runtime**: `supabase/functions/regenerate-sitemap/index.ts` edge function can be called from the admin SEO Settings page. Returns the XML and optionally uploads to `public-assets` storage bucket.
+- **Client call**: `src/utils/sitemap.ts` exports `regenerateSitemap()` which invokes the edge function via `supabase.functions.invoke()`.
+- **robots.txt**: Points to `https://geconstruction.co.za/sitemap.xml`
 
 ### Supabase Client Configuration
 - **File**: `src/lib/supabase.ts`
@@ -85,18 +91,18 @@ npm run preview      # Preview production build locally
 | **Admin CMS** | ✅ Complete | Dashboard, Business Details, SEO Settings, Blog CRUD, Review Manager, Analytics Settings |
 | **Authentication** | ✅ Complete | Supabase Auth with email/password, ProtectedRoute, session management |
 | **SEO Management** | ✅ Complete | Per-page meta tags, Open Graph, favicon, Google preview in admin |
-| **Analytics Integration** | ✅ Complete | Facebook Pixel + GA4 with master toggle, event tracking |
+| **Analytics Integration** | ✅ Complete | Facebook Pixel + GA4 with master toggle, event tracking, admin analytics page |
 | **WhatsApp Integration** | ✅ Complete | Contact form → WhatsApp message, floating CTAs throughout |
 | **Blog System** | ✅ Complete | CRUD with TipTap editor, image upload, categories, draft/publish, SEO fields |
 | **Review System** | ✅ Complete | Public submission (pending approval), admin approval workflow, featured flag |
-| **Sitemap Generation** | ✅ Complete | Edge function generates XML sitemap, build script also generates static version |
+| **Sitemap Generation** | ✅ Complete | Build script (`scripts/generate-sitemap.ts`) generates static sitemap at build time, edge function for dynamic regeneration, admin SEO page has "Regenerate Sitemap" button |
 | **Responsive Design** | ✅ Complete | Mobile-first, hamburger menu, responsive grids |
 
 ### ⚠️ Known Gaps / Partial Implementations
 
 | Gap | Details | Priority |
 |-----|---------|----------|
-| **Analytics Dashboard Data** | Admin Analytics page configures tracking IDs but has no actual analytics data display (no charts, no page view counts). The `recharts` package is installed but unused. | Medium |
+| **Analytics Dashboard Data** | Admin Analytics page configures tracking IDs (FB Pixel + GA4 with master toggle) but has no actual analytics data display (no charts, no page view counts). The `recharts` package is installed but unused. | Medium |
 | **Contact Form Backend** | Contact form submits via WhatsApp redirect (no server-side storage). No database table for contact submissions. | Medium |
 | **Blog Content Rendering** | Blog post content uses a custom markdown-like parser (`formatContent` in `BlogPost.tsx`) rather than rendering TipTap HTML directly. This is a workaround — TipTip HTML content may not render perfectly. | Low |
 | **Image Optimization** | No image optimization pipeline. Images are stored as-is in Supabase Storage. | Low |
@@ -173,14 +179,21 @@ src/
 │       ├── Login.tsx           # Admin login page
 │       ├── Dashboard.tsx       # Admin overview with stats
 │       ├── BusinessDetails.tsx # Company info, contact, hours, social
-│       ├── SeoSettings.tsx     # Per-page SEO meta/OG tags
+│       ├── SeoSettings.tsx     # Per-page SEO meta/OG tags + sitemap regen button
+│       ├── Analytics.tsx       # FB Pixel + GA4 configuration with master toggle
 │       ├── BlogList.tsx        # Blog post management table
 │       ├── BlogEditor.tsx      # Create/edit blog post
-│       ├── ReviewManager.tsx   # Approve/reject/add reviews
-│       └── Analytics.tsx       # FB Pixel + GA4 configuration
+│       └── ReviewManager.tsx   # Approve/reject/add reviews
 └── utils/
-    ├── sitemap.ts              # Client-side sitemap regeneration call
+    ├── sitemap.ts              # Client-side sitemap regeneration via edge function
     └── toast.ts                # Toast notification utilities
+
+scripts/
+    └── generate-sitemap.ts     # Build-time sitemap generator (static + dynamic posts)
+
+supabase/functions/
+    └── regenerate-sitemap/
+        └── index.ts            # Edge function for dynamic sitemap regeneration
 ```
 
 ### Naming Conventions
@@ -207,8 +220,8 @@ Admin:
   /admin/login        → Login page (no header/footer)
   /admin              → Dashboard (protected)
   /admin/business     → Business Details (protected)
-  /admin/seo          → SEO Settings (protected)
-  /admin/analytics    → Analytics Settings (protected)
+  /admin/seo          → SEO Settings (protected) + Sitemap regeneration button
+  /admin/analytics    → Analytics Settings (protected) — FB Pixel + GA4 configuration
   /admin/blog         → Blog List (protected)
   /admin/blog/new     → New Blog Post (protected)
   /admin/blog/edit/:id → Edit Blog Post (protected)
@@ -299,7 +312,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 | `blog-images` | Blog post featured images | Public |
 | `public-assets` | Sitemap XML, other public assets | Public |
 
-### Tables (7 total)
+### Tables (7 total — analytics_settings included)
 
 #### 1. `business_details`
 Stores company information displayed throughout the site.
@@ -449,14 +462,16 @@ User profiles (auto-created on signup via trigger).
 
 ### Patterns to Maintain
 1. **Admin routes**: Wrap in `<ProtectedRoute>`, use `<AdminLayout>`, no Header/Footer
-2. **Public routes**: Wrapped in `<AnalyticsProvider>`, include `<Header>` and `<Footer>`
+2. **Public routes**: Wrapped in `<AnalyticsProvider>` (fetches analytics_settings), include `<AnalyticsScripts />` for tracking injection, `<Header>` and `<Footer>`
 3. **SEO**: Use `<Helmet>` at the page level with data fetched from `seo_settings` table
-4. **Forms**: Use controlled components with `useState`, submit via Supabase mutations
-5. **Loading states**: Show `animate-pulse` skeleton or `animate-spin` spinner
-6. **Error handling**: Show user-friendly error messages in styled alert boxes
-7. **WhatsApp integration**: Format messages with `encodeURIComponent`, open in new tab
-8. **Image uploads**: Use `react-dropzone` + Supabase Storage (`blog-images` bucket)
-9. **RLS**: All tables have RLS enabled. Public reads use `true` policy for settings tables. Blog posts filter by `status='published'` for anonymous users. Reviews filter by `status='approved'` for anonymous users.
+4. **Analytics Tracking**: Use `trackFbEvent(eventName, params)` and `trackGaEvent(eventName, params)` from `src/components/AnalyticsScripts.tsx` for custom event tracking. Page views are automatic via FB Pixel / GA4 base scripts.
+5. **Forms**: Use controlled components with `useState`, submit via Supabase mutations
+6. **Loading states**: Show `animate-pulse` skeleton or `animate-spin` spinner
+7. **Error handling**: Show user-friendly error messages in styled alert boxes
+8. **WhatsApp integration**: Format messages with `encodeURIComponent`, open in new tab
+9. **Image uploads**: Use `react-dropzone` + Supabase Storage (`blog-images` bucket)
+10. **Sitemap**: Regenerate via `regenerateSitemap()` from `src/utils/sitemap.ts` (calls edge function) or run `npm run sitemap` for build-time generation. The sitemap includes all static pages plus published blog posts.
+11. **RLS**: All tables have RLS enabled. Public reads use `true` policy for settings tables (`business_details`, `seo_settings`, `analytics_settings`). Blog posts filter by `status='published'` for anonymous users. Reviews filter by `status='approved'` for anonymous users.
 
 ### What NOT to Do
 - ❌ Don't add error handling for scenarios that can't happen
@@ -468,10 +483,15 @@ User profiles (auto-created on signup via trigger).
 - ❌ Don't install packages that already exist in the project
 - ❌ Don't modify `vite.config.ts`, `tailwind.config.ts`, or `tsconfig*.json` unless explicitly asked
 - ❌ Don't create SQL migration files in `supabase/migrations/` — use the `execute_sql` tool instead
+- ❌ Don't hardcode tracking IDs in components — always read from `analytics_settings` table via `AnalyticsContext`
+- ❌ Don't edit files in `supabase/functions/` directly — use the Supabase edge function creation workflow
 
 ### Reference Files
 - **`AI_RULES.md`** — Project rules for the Dyad environment (tech stack, theme, deployment)
 - **`src/App.tsx`** — Route definitions (single source of truth for all routes)
 - **`src/lib/supabase.ts`** — Supabase client configuration
 - **`src/contexts/AuthContext.tsx`** — Authentication patterns
+- **`src/contexts/AnalyticsContext.tsx`** — Analytics settings context (FB Pixel + GA4)
+- **`src/components/AnalyticsScripts.tsx`** — Tracking script injection + `trackFbEvent` / `trackGaEvent` helpers
+- **`src/utils/sitemap.ts`** — Client-side sitemap regeneration via edge function
 - **`src/globals.css`** — Color system, typography, CSS variables
